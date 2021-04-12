@@ -29,6 +29,7 @@ docker exec -it loyality_system_app cp .env.example .env
 docker exec -it loyality_system_app composer dump-autoload
 docker exec -it loyality_system_app php artisan key:generate
 docker exec -it loyality_system_app php artisan migrate:fresh --seed
+docker exec -it loyality_system_app php artisan passport:install --force
 # docker exec -it loyality_system_app php artisan config:cache
 # docker exec -it loyality_system_app php artisan route:cache
 #### END Configuring (loyality_system_app) microservice ----------------------
