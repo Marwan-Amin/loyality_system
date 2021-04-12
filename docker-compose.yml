@@ -1,0 +1,52 @@
+version: "3.4"
+
+networks:
+  loyality_system:
+
+services:
+  loyality_system_app:
+    build: .
+    container_name: loyality_system_app
+    working_dir: /var/www/html/
+    command: "php artisan serve --host=0.0.0.0 --port=9000"
+    depends_on:
+      - loyality_system_database
+    volumes:
+      - ./loyality_system/:/var/www/html/
+    ports:
+      - "9000:9000"
+    stdin_open: true
+    tty: true
+    networks:
+      - loyality_system
+
+  loyality_system_database:
+    image: mysql:latest
+    command:
+      - --innodb_buffer_pool_size=10M
+      - --innodb_use_native_aio=0
+    container_name: loyality_system_database
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: loyality_system
+    ports:
+      - "9001:3306"
+    networks:
+      - loyality_system
+    restart: always
+    volumes:
+      - ./loyality_system_database/:/var/lib/mysql
+
+  loyality_system_phpmyadmin:
+    image: phpmyadmin:latest
+    restart: always
+    container_name: loyality_system_phpmyadmin
+    depends_on:
+      - loyality_system_database
+    ports:
+      - "9002:80"
+    environment:
+      PMA_HOST: loyality_system_database
+      MYSQL_ROOT_PASSWORD: secret
+    networks:
+      - loyality_system
