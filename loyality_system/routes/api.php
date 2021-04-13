@@ -1,9 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\VerificationController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Api\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,3 +17,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login'])->middleware('is_verified');
+
+Route::middleware(['auth:api'])->group(function () {
+    Route::post('/transaction', [TransactionController::class, 'transaction']);
+    Route::post('/transaction/confirm', [TransactionController::class, 'confirm']);
+});

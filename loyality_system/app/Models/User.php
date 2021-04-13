@@ -49,4 +49,16 @@ class User extends Authenticatable
     {
         $this->attributes['password'] = bcrypt($password);
     }
+
+    public function subtractPoints($points)
+    {
+        $this->points = $this->points - $points;
+        $this->save();
+    }
+
+    public function transferPoints($points)
+    {
+        $this->points = $this->points + $points;
+        $this->save();
+    }
 }
