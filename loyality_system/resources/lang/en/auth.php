@@ -21,5 +21,6 @@ return [
     'register_failed'  => 'Warning: Something went wrong, please try again!',
     'invalid_email'    => 'This email is not found on our system.',
     'success_verified' => "Success: You have successfully verified your account",
-    'already_verified' => "Your account is already verified!, please log in to continue"
+    'already_verified' => "Your account is already verified!, please log in to continue",
+    'login_success' => "Success: You have logged in successfully"
 ];

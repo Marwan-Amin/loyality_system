@@ -3,7 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Rules\ValidateVerificationCode;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class VerifyRequest extends FormRequest
 {
@@ -27,5 +29,19 @@ class VerifyRequest extends FormRequest
         return [
             'code' => ['required', 'string', new ValidateVerificationCode]
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json(
+                [
+                    'status' => false,
+                    'message' => $validator->errors()->first(),
+                    'data' => null
+                ],
+                400
+            )
+        );
     }
 }

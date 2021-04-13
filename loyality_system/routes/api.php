@@ -17,7 +17,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('email/verify/{id}', [VerificationController::class, 'verify']);
-Route::get('email/resend', [VerificationController::class, 'resend']);
-
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
