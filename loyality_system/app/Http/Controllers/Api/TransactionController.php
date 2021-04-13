@@ -8,6 +8,7 @@ use App\Http\Requests\TransactionRequest;
 use App\Http\Resources\Transaction\TransactionResource;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Notifications\SendTransferPointsEmail;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -20,14 +21,16 @@ class TransactionController extends Controller
 
     public function Transaction(TransactionRequest $request)
     {
+        $receiverUser = User::where('email', $request->email)->get()->first();
+
         $transaction = Transaction::create([
             'sender_id' => auth()->user()->id,
-            'receiver_id' => $request->user_id,
+            'receiver_id' => $receiverUser->id,
             'points' => $request->points,
             'is_expired' => 0,
+            'is_confirmed' => 0,
         ]);
 
-        $receiverUser = User::find($request->user_id);
         return $this->apiResponse
             ->setSuccess(__('transaction.create_success', ['points' => $request->points, 'user' => $receiverUser->name]))
             ->setData(new TransactionResource($transaction))
@@ -39,13 +42,12 @@ class TransactionController extends Controller
         try {
             $transaction = Transaction::find($request->transaction_id);
             DB::transaction(function () use ($transaction) {
-                $transaction->update([
-                    'is_confirmed' => true
-                ]);
+                $transaction->confirm();
                 $sender = User::find($transaction->sender_id);
                 $sender->subtractPoints($transaction->points);
                 $receiver = User::find($transaction->receiver_id);
                 $receiver->transferPoints($transaction->points);
+                $receiver->notify(new SendTransferPointsEmail($sender, $transaction, $receiver));
             });
         } catch (Exception $exception) {
             return $this->apiResponse
@@ -55,7 +57,7 @@ class TransactionController extends Controller
         }
 
         return $this->apiResponse
-            ->setSuccess(__('transaction.confirm_success', ['points' => $transaction->points]))
+            ->setSuccess(__('transaction.confirm_success', ['points' => $transaction->points, 'user' => $transaction->receiver->name]))
             ->setData(new TransactionResource($transaction))
             ->returnJson();
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Transaction;
 
+use App\Http\Resources\User\UserResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TransactionResource extends JsonResource
@@ -16,9 +17,10 @@ class TransactionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'sender' => $this->sender,
-            'receiver' => $this->receiver,
-            'is_expired' => $this->is_expired
+            'sender' => new UserResource($this->sender),
+            'receiver' => new UserResource($this->receiver),
+            'is_expired' => $this->is_expired,
+            'is_confirmed' => $this->is_confirmed,
         ];
     }
 }

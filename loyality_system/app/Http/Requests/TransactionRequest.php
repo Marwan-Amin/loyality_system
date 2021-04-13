@@ -30,7 +30,7 @@ class TransactionRequest extends FormRequest
     {
         if ($this->path() == 'api/transaction') {
             return [
-                'user_id' => 'required|integer|min:1|exists:users,id|not_in:' . auth()->user()->id,
+                'email' => 'required|email|min:1|exists:users,email|not_in:' . auth()->user()->email,
                 'points' => 'required|integer|min:1|max:' . auth()->user()->points
             ];
         }
@@ -61,7 +61,8 @@ class TransactionRequest extends FormRequest
     public function messages()
     {
         return [
-            'user_id.not_in' => __('transaction.current_user_id'),
+            'email.not_in' => __('transaction.current_user_email'),
+            'email.exists' => __('transaction.email_not_found'),
             'points.max' => __('transaction.max_points'),
             'transaction_id.exists' => __('transaction.not_valid_transaction_id')
         ];

@@ -14,7 +14,7 @@ class ValidateConfirmedTransaction implements Rule
      */
     public function __construct()
     {
-        //
+        $this->status = '';
     }
 
     /**
@@ -26,11 +26,13 @@ class ValidateConfirmedTransaction implements Rule
      */
     public function passes($attribute, $value)
     {
-        $transaction = Transaction::where([
-            'id' => $value,
-            'is_confirmed' => 1,
-        ])->get()->first();
-        if ($transaction) {
+        $transaction = Transaction::find($value);
+        if ($transaction->isConfirmed()) {
+            $this->status = "confirmed";
+            return false;
+        }
+        if ($transaction->isExpired()) {
+            $this->status = "expired";
             return false;
         }
         return true;
@@ -43,6 +45,12 @@ class ValidateConfirmedTransaction implements Rule
      */
     public function message()
     {
-        return __('transaction.transaction_already_confirmed');
+        if ($this->status == 'confirmed') {
+            return __('transaction.transaction_already_confirmed');
+        }
+
+        if ($this->status == 'expired') {
+            return __('transaction.transaction_expired');
+        }
     }
 }
