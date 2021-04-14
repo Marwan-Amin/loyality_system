@@ -61,4 +61,19 @@ class User extends Authenticatable
         $this->points = $this->points + $points;
         $this->save();
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'sender_id');
+    }
+
+    public function expiredTransactions()
+    {
+        return $this->hasMany(Transaction::class, 'sender_id')->where('is_expired', 1);
+    }
+
+    public function confirmedTransactions()
+    {
+        return $this->hasMany(Transaction::class, 'sender_id')->where('is_confirmed', 1);
+    }
 }

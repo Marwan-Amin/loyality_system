@@ -19,6 +19,7 @@ class TransactionResource extends JsonResource
             'id' => $this->id,
             'sender' => new UserResource($this->sender),
             'receiver' => new UserResource($this->receiver),
+            'points' => $this->points,
             'is_expired' => $this->is_expired,
             'is_confirmed' => $this->is_confirmed,
         ];
