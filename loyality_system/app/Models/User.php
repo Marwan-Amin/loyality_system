@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Constants;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -69,11 +70,11 @@ class User extends Authenticatable
 
     public function expiredTransactions()
     {
-        return $this->hasMany(Transaction::class, 'sender_id')->where('is_expired', 1);
+        return $this->hasMany(Transaction::class, 'sender_id')->where('status', Constants::STATUS_EXPIRED);
     }
 
     public function confirmedTransactions()
     {
-        return $this->hasMany(Transaction::class, 'sender_id')->where('is_confirmed', 1);
+        return $this->hasMany(Transaction::class, 'sender_id')->where('is_confirmed', Constants::STATUS_CONFIRMED);
     }
 }

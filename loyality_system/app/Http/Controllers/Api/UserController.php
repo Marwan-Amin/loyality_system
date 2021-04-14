@@ -36,11 +36,8 @@ class UserController extends Controller
             if ($request->user_id) {
                 $query->where('receiver_id', $request->user_id);
             }
-            if ($request->filter == 'confirmed') {
-                $query->where('is_confirmed', 1);
-            }
-            if ($request->filter == 'expired') {
-                $query->where('is_expired', 1);
+            if ($request->filter) {
+                $query->where('status', $request->filter);
             }
         })->get();
         return $this->apiResponse->setSuccess(__('user.get_transactions'))->setData(new TransactionCollection($transactions))->returnJson();

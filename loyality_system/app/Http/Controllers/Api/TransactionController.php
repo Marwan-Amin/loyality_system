@@ -27,8 +27,6 @@ class TransactionController extends Controller
             'sender_id' => auth()->user()->id,
             'receiver_id' => $receiverUser->id,
             'points' => $request->points,
-            'is_expired' => 0,
-            'is_confirmed' => 0,
         ]);
 
         return $this->apiResponse

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Constants;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,13 +15,7 @@ class Transaction extends Model
         'sender_id',
         'receiver_id',
         'points',
-        'is_expired',
-        'is_confirmed',
-    ];
-
-    protected $casts = [
-        'is_expired' => 'boolean',
-        'is_confirmed' => 'boolean',
+        'status',
     ];
 
     public function receiver()
@@ -35,26 +30,32 @@ class Transaction extends Model
 
     public function confirm()
     {
-        $this->is_confirmed = 1;
+        $this->status = Constants::STATUS_CONFIRMED;
         $this->save();
     }
 
     public function expire()
     {
-        $this->is_expired = 1;
+        $this->status = Constants::STATUS_EXPIRED;
         $this->save();
     }
 
     public function isConfirmed()
     {
-        return $this->is_confirmed;
+        if ($this->status == Constants::STATUS_CONFIRMED) {
+            return true;
+        }
+        return false;
     }
 
     public function isExpired()
     {
         $currentMoment = Carbon::now();
         $createdAtDate = Carbon::parse($this->created_at);
-        $difference = $createdAtDate->diffInSeconds($currentMoment);
-        return $difference > 600;  // Expiration period = 10 minutes = 600 seconds
+        $difference = $createdAtDate->diffInSeconds($currentMoment); // Expiration period = 10 minutes = 600 seconds
+        if ($difference > 600 || $this->status == Constants::STATUS_EXPIRED) {
+            return true;
+        }
+        return false;
     }
 }

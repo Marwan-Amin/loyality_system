@@ -14,7 +14,7 @@ class ValidateAvailablePoints implements Rule
      */
     public function __construct()
     {
-        //
+        $this->status = '';
     }
 
     /**
@@ -27,6 +27,10 @@ class ValidateAvailablePoints implements Rule
     public function passes($attribute, $value)
     {
         $transaction = Transaction::find($value);
+        if (!$transaction) {
+            $this->status = "not_found";
+            return false;
+        }
         if (auth()->user()->points < $transaction->points) {
             return false;
         }
@@ -40,6 +44,10 @@ class ValidateAvailablePoints implements Rule
      */
     public function message()
     {
+        if ($this->status == 'not_found') {
+            return __('transaction.not_valid_transaction_id');
+        }
+        
         return __('transaction.not_enough_points');
     }
 }

@@ -22,6 +22,16 @@ class CheckEmailVerification
     public function handle($request, Closure $next)
     {
         $user = User::where('email', $request->email)->get()->first();
+        if (!$user) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => __('auth.failed'),
+                    'data' => null
+                ],
+                400
+            );
+        }
         if (!$user->hasVerifiedEmail()) {
             return response()->json(
                 [

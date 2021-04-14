@@ -27,6 +27,11 @@ class ValidateConfirmedTransaction implements Rule
     public function passes($attribute, $value)
     {
         $transaction = Transaction::find($value);
+        if (!$transaction) {
+            $this->status = "not_found";
+            return false;
+        }
+
         if ($transaction->isConfirmed()) {
             $this->status = "confirmed";
             return false;
@@ -51,6 +56,10 @@ class ValidateConfirmedTransaction implements Rule
 
         if ($this->status == 'expired') {
             return __('transaction.transaction_expired');
+        }
+
+        if ($this->status == 'not_found') {
+            return __('transaction.not_valid_transaction_id');
         }
     }
 }
